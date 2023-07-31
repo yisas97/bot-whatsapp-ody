@@ -1,53 +1,91 @@
-import {fileTypeFromBuffer} from 'file-type';
-import fetch from 'node-fetch';
+const {
+    besoEstatico1,
+    besoEstatico10,
+    besoEstatico2,
+    besoEstatico3,
+    besoEstatico4,
+    besoEstatico5,
+    besoEstatico6,
+    besoEstatico7,
+    besoEstatico8,
+    besoEstatico9,
+    casadoEstatico1,
+    casadoEstatico2,
+    casadoEstatico3,
+    casadoEstatico4, casadoEstatico5, divorciadoEstatico1, divorciadoEstatico2, divorciadoEstatico3, divorciadoEstatico4
+} = require( "../stickers/stickerEstaticos");
+const {Sticker, StickerTypes} = require( "wa-sticker-formatter");
+const {getRandomElement} = require( "../utils/util");
 
 
-async function createSticker(img, url, packname, author, categories = [''], extra = {}) {
-    const { Sticker } = await import('wa-sticker-formatter')
-    const stickerMetadata = {
-      type: 'full',
-      pack: packname,
-      author,
-      categories,
-      ...extra
+
+async function insertSticker(sock,numberWa, type) {
+    let sticker;
+    let arrayEstatico;
+    let randomElement;
+    let gitBuffer;
+    switch (type) {
+        case 0:
+            arrayEstatico = [besoEstatico1, besoEstatico2, besoEstatico3, besoEstatico4, besoEstatico5, besoEstatico6, besoEstatico7, besoEstatico8, besoEstatico9, besoEstatico10];
+            randomElement = getRandomElement(arrayEstatico);
+            gitBuffer = Buffer.from(randomElement, 'base64');
+
+            sticker = await new Sticker(gitBuffer, {
+                pack: `Besos estaticos`,
+                author: 'Jesus',
+                type: StickerTypes.DEFAULT,
+                categories: ['🤩', '🎉'],
+                quality: 100,
+            }).build()
+
+            return await sock.sendMessage(
+                numberWa,
+                {
+                    sticker
+                }
+            );
+        case 1:
+            arrayEstatico = [casadoEstatico1,casadoEstatico2,casadoEstatico3,casadoEstatico4,casadoEstatico5];
+            randomElement = getRandomElement(arrayEstatico);
+            gitBuffer = Buffer.from(randomElement, 'base64');
+            sticker = await new Sticker(gitBuffer, {
+                pack: 'Casados ODY',
+                author: 'Jesus',
+                type: StickerTypes.DEFAULT,
+                categories: ['🤩', '🎉'],
+                quality: 100,
+            }).build()
+
+            return await sock.sendMessage(
+                numberWa,
+                {
+                    sticker
+                }
+            );
+        case 2:
+            arrayEstatico = [divorciadoEstatico1,divorciadoEstatico2,divorciadoEstatico3,divorciadoEstatico4];
+            randomElement = getRandomElement(arrayEstatico);
+            gitBuffer = Buffer.from(randomElement, 'base64');
+
+            sticker = await new Sticker(gitBuffer, {
+                pack: 'My Sticker',
+                author: 'Jesus',
+                type: StickerTypes.DEFAULT,
+                categories: ['🤩', '🎉'],
+                quality: 100,
+            }).build()
+
+            return await sock.sendMessage(
+                numberWa,
+                {
+                    sticker
+                }
+            );
+
     }
-    return (new Sticker(img ? img : url, stickerMetadata)).toBuffer()
-  }
 
-async function canvas(code, type = 'png', quality = 0.92) {
-    let res = await fetch('https://nurutomo.herokuapp.com/api/canvas?' + queryURL({
-        type,
-        quality
-    }), {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain',
-            'Content-Length': code.length
-        },
-        body: code
-    })
-    return await res.buffer()
 }
 
-function queryURL(queries) {
-    return new URLSearchParams(Object.entries(queries))
-}
-
-async function sticker(img, url) {
-    url = url ? url : await uploadImage(img)
-    let {
-        mime
-    } = url ? { mime: 'image/jpeg' } : await fileTypeFromBuffer(img)
-    let sc = `let im = await loadImg('data:${mime};base64,'+(await window.loadToDataURI('${url}')))
-  c.width = c.height = 512
-  let max = Math.max(im.width, im.height)
-  let w = 512 * im.width / max
-  let h = 512 * im.height / max
-  ctx.drawImage(im, 256 - w / 2, 256 - h / 2, w, h)
-  `
-    return await canvas(sc, 'webp')
-}
-
-export {
-    sticker
+module.exports =  {
+    insertSticker
 }

@@ -8,7 +8,8 @@ const ffmpeg = require('fluent-ffmpeg');
 const buscadoryt = require('./src/plugins/buscador');
 const ytdl = require('ytdl-core');
 
-const log = (pino = require("pino"));
+const pino = require("pino");
+const log =  pino;
 const {session} = {session: "session_auth_info"};
 const {Boom} = require("@hapi/boom");
 const fs = require("fs");
@@ -17,7 +18,6 @@ const fileUpload = require("express-fileupload");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = require("express")();
-const {Sticker, StickerTypes} = require('wa-sticker-formatter');
 // enable files upload
 app.use(
     fileUpload({
@@ -32,20 +32,10 @@ const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 const port = process.env.PORT || 8000;
 const qrcode = require("qrcode");
-const {beso1, beso2, beso3, beso4} = require("./src/stickers/giftBase64");
-const {
-    besoEstatico1,
-    besoEstatico2,
-    besoEstatico3,
-    besoEstatico4,
-    besoEstatico5,
-    besoEstatico6,
-    besoEstatico8,
-    besoEstatico9,
-    besoEstatico7,
-    besoEstatico10, casadoEstatico1, casadoEstatico2, casadoEstatico3, casadoEstatico4, casadoEstatico5,
-    divorciadoEstatico1, divorciadoEstatico2, divorciadoEstatico3, divorciadoEstatico4
-} = require("./src/stickers/stickerEstaticos");
+const {insertSticker} = require("./src/plugins/sticker");
+const {buscadorYoutube} = require("./src/plugins/youtube");
+const {getRandom} = require("./src/utils/util");
+const {juegoSiNo, getMenu, getHola, PingPong, getAdios} = require("./src/plugins/juegosSimples");
 
 app.use("/assets", express.static(__dirname + "/client/assets"));
 
@@ -58,28 +48,6 @@ app.get("/scan", (req, res) => {
 app.get("/", (req, res) => {
     res.send("server working");
 });
-
-
-function mostrarInformacionVideo(video) {
-    console.log('Título:', video.title);
-    console.log('URL:', video.url);
-    console.log('Duración:', video.timestamp);
-    console.log('Vistas:', video.views);
-    console.log('URL de la miniatura:', video.image);
-    console.log('Autor:', video.author.name);
-    console.log('URL del autor:', video.author.url);
-    console.log('Verificado:', video.author.verified);
-    console.log('---');
-
-    return `Se encontre estos valores:
-	*│* ┊
-	*│* ┊▸ ✦ _Titulo: ${video.title}_
-	*│* ┊▸ ✦ _URL: ${video.url}_ 
-	*│* ┊▸ ✦ _Duracion: ${video.timestamp}_ 
-	*│* ┊▸ ✦ _Autor: ${video.author.name}_ 
-	*│* ╰∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙ ∙ ∙ ∙ 
-	`.trim();
-}
 
 let sock;
 let qrDinamic;
@@ -137,147 +105,6 @@ async function connectToWhatsApp() {
         }
     });
 
-
-    async function insertSticker(numberWa, type) {
-        let imagePath;
-        let sticker;
-        let arrayEstatico;
-        let randomElement;
-        let gitBuffer;
-        switch (type) {
-            case 0:
-                arrayEstatico = [besoEstatico1, besoEstatico2, besoEstatico3, besoEstatico4, besoEstatico5, besoEstatico6, besoEstatico7, besoEstatico8, besoEstatico9, besoEstatico10];
-                randomElement = getRandomElement(arrayEstatico);
-                gitBuffer = Buffer.from(randomElement, 'base64');
-
-                sticker = await new Sticker(gitBuffer, {
-                    pack: `Besos estaticos`,
-                    author: 'Jesus',
-                    type: StickerTypes.DEFAULT,
-                    categories: ['🤩', '🎉'],
-                    quality: 100,
-                }).build()
-
-                return await sock.sendMessage(
-                    numberWa,
-                    {
-                        sticker
-                    }
-                );
-            case 1:
-                arrayEstatico = [casadoEstatico1,casadoEstatico2,casadoEstatico3,casadoEstatico4,casadoEstatico5];
-                randomElement = getRandomElement(arrayEstatico);
-                gitBuffer = Buffer.from(randomElement, 'base64');
-                sticker = await new Sticker(gitBuffer, {
-                    pack: 'Casados ODY',
-                    author: 'Jesus',
-                    type: StickerTypes.DEFAULT,
-                    categories: ['🤩', '🎉'],
-                    quality: 100,
-                }).build()
-
-                return await sock.sendMessage(
-                    numberWa,
-                    {
-                        sticker
-                    }
-                );
-            case 2:
-                arrayEstatico = [divorciadoEstatico1,divorciadoEstatico2,divorciadoEstatico3,divorciadoEstatico4];
-                randomElement = getRandomElement(arrayEstatico);
-                gitBuffer = Buffer.from(randomElement, 'base64');
-
-                sticker = await new Sticker(gitBuffer, {
-                    pack: 'My Sticker',
-                    author: 'Jesus',
-                    type: StickerTypes.DEFAULT,
-                    categories: ['🤩', '🎉'],
-                    quality: 100,
-                }).build()
-
-                return await sock.sendMessage(
-                    numberWa,
-                    {
-                        sticker
-                    }
-                );
-
-        }
-
-    }
-
-    function getRandomElement(arr) {
-        const randomIndex = Math.floor(Math.random() * arr.length);
-        console.log("El numero de indice es : ", randomIndex);
-        return arr[randomIndex];
-    }
-
-
-    async function insertGift(numberWa, type) {
-        let imagePath;
-        let sticker
-        switch (type) {
-            case 0:
-                const arrayBesos = [beso1, beso2, beso3, beso4];
-                fs.writeFileSync('output.gif', getRandomElement(arrayBesos), 'base64', function (err) {
-                    console.log(err);
-                })
-
-                ffmpeg('output.gif')
-                    .output('output.mp4')
-                    .on('end', function () {
-                        console.log('La conservision de completo');
-                    })
-                    .run();
-                const videoGift = fs.readFileSync('./output.mp4')
-
-                return await sock.sendMessage(
-                    numberWa,
-                    {
-                        video: videoGift,
-                        caption: "Beso |-.-|",
-                        gifPlayback: false
-                    }
-                );
-            case 1:
-                imagePath = './marry.png';
-
-                sticker = await new Sticker(imagePath, {
-                    pack: 'Casados ODY',
-                    author: 'Jesus',
-                    type: StickerTypes.DEFAULT,
-                    categories: ['🤩', '🎉'],
-                    quality: 100,
-                }).build()
-
-                return await sock.sendMessage(
-                    numberWa,
-                    {
-                        sticker
-                    }
-                );
-            case 2:
-                imagePath = './marry.png';
-
-                sticker = await new Sticker(imagePath, {
-                    pack: 'My Sticker',
-                    author: 'Jesus',
-                    type: StickerTypes.DEFAULT,
-                    categories: ['🤩', '🎉'],
-                    quality: 100,
-                }).build()
-
-                return await sock.sendMessage(
-                    numberWa,
-                    {
-                        sticker
-                    }
-                );
-
-        }
-
-    }
-
     sock.ev.on("messages.upsert", async ({messages, type}) => {
         try {
             if (type === "notify") {
@@ -315,7 +142,7 @@ async function connectToWhatsApp() {
                                         quoted: null
                                     }
                                 );
-                                await insertSticker(numberWa, 0);
+                                await insertSticker(sock,numberWa, 0);
 
                             }
                             if (text.startsWith("$marry.")) {
@@ -331,7 +158,7 @@ async function connectToWhatsApp() {
                                         quoted: null
                                     }
                                 );
-                                await insertSticker(numberWa, 1);
+                                await insertSticker(sock,numberWa, 1);
                             }
                             if (text.startsWith("$divorce.")) {
                                 console.log(messages[0]);
@@ -346,7 +173,7 @@ async function connectToWhatsApp() {
                                         quoted: null
                                     }
                                 );
-                                await insertSticker(numberWa, 2);
+                                await insertSticker(sock,numberWa, 2);
                             }
                         }
 
@@ -357,23 +184,14 @@ async function connectToWhatsApp() {
                     const compareMessage = captureMessage.toLocaleLowerCase();
                     console.log(compareMessage);
                     //Juego de preguntas si o no
-                    const respuestas = ["Si", "No", "Es muy probable que si", "Estoy seguro que no", "Las señales apuntan a que sí.", "Lo más probable", "Mi respuesta es no.", "Mi respuesta es si."];
+
                     if (compareMessage.startsWith("$.")) {
-                        const indiceRespuesta = Math.floor(Math.random() * respuestas.length);
-                        await sock.sendMessage(
-                            numberWa,
-                            {
-                                text: respuestas[indiceRespuesta],
-                            },
-                            {
-                                quoted: messages[0],
-                            }
-                        );
+                        await juegoSiNo(sock, numberWa, messages);
                     } else if (compareMessage.startsWith("$!")) {
                         const palabras = compareMessage.replace(/\$\!/, '').split(',');
                         console.log("La nueva palabra : ", palabras);
                         const palabrasSeparadas = palabras.map(palabras => palabras.trim());
-                        const indicePalabras = Math.floor(Math.random() * palabrasSeparadas.length);
+                        const indicePalabras = getRandom(palabrasSeparadas);
                         const palabrasSeleccionada = palabrasSeparadas[indicePalabras];
                         console.log("Palabra seleccionada: ", palabrasSeleccionada);
 
@@ -388,110 +206,17 @@ async function connectToWhatsApp() {
                         );
 
                     } else if (compareMessage.startsWith("$yt.")) {
-                        const elementBuscar = await buscadoryt.searchYouTube(compareMessage.replace(/\$\!/, ''));
-                        console.log(elementBuscar);
-                        await sock.sendMessage(
-                            numberWa,
-                            {
-                                text: mostrarInformacionVideo(elementBuscar),
-                            },
-                            {
-                                quoted: messages[0],
-                            }
-                        );
-                        const downloadOptions = {
-                            filter: 'audioonly',
-                            quality: 'highestaudio',
-                        };
-                        const audioStream = ytdl(elementBuscar.url, downloadOptions);
-                        const outputStream = fs.createWriteStream('output.mp3');
-                        audioStream.pipe(outputStream);
-                        outputStream.on(
-                            'finish',
-                            () => {
-                                sock.sendMessage(
-                                    numberWa,
-                                    {audio: {url: './output.mp3'}, mimetype: 'audio/mp4'},
-                                    {url: "audio.mp3"} //can send mp3, mp4, & ogg
-                                )
-                            }
-                        )
+                        await buscadorYoutube(sock, numberWa, messages, compareMessage);
                     } else if (compareMessage.trim() === "yo") {
-                        await sock.sendMessage(
-                            numberWa,
-                            {
-                                text: "Soy un robot",
-                            },
-                            {
-                                quoted: messages[0],
-                            }
-                        );
+                        await getHola(sock,numberWa,messages);
                     } else if (compareMessage.trim() === "hola") {
-                        await sock.sendMessage(
-                            numberWa,
-                            {
-                                text: "Hola, soy Ody Robot",
-                            },
-                            {
-                                quoted: messages[0],
-                            }
-                        );
+                        await getHola(sock,numberWa,messages);
                     } else if (compareMessage.trim() === "ping") {
-                        await sock.sendMessage(
-                            numberWa,
-                            {
-                                text: "Pong!",
-                            },
-                            {
-                                quoted: messages[0],
-                            }
-                        );
+                        await PingPong(sock,numberWa,messages);
                     } else if (compareMessage.trim() === "chao") {
-                        await sock.sendMessage(
-                            numberWa,
-                            {
-                                text: "Nos vemos.",
-                            },
-                            {
-                                quoted: messages[0],
-                            }
-                        );
-                    } else if (compareMessage.startsWith("$kiss.")) {
-                        await sock.sendMessage(
-                            numberWa,
-                            {
-                                text: "Esta en proceso de realizar esa funcionalidad.",
-                            },
-                            {
-                                quoted: messages[0],
-                            }
-                        );
+                        await getAdios(sock,numberWa,messages);
                     } else if (compareMessage.startsWith("$menu.")) {
-                        let menuPrincipal = `*◈ MENU ◈*
-*☆═━┈◈ ╰ ODY ╯ ◈┈━═☆*
-*│* 
-*╰ ▸▸ Comandos de Juegos ◂◂*
-*│* ┊
-*│* ┊▸ ✦ $. Comando de Juego Si o No.
-*│* ┊▸ ✦ $! Comando de Juego quien gana
-*│* ┊▸ ✦ $kiss. Comando de Juego de Beso.
-*│* ┊▸ ✦ $marry. Comando de Juego de Casado .
-*│* ┊▸ ✦ $divorce. Comando de Juego de Divorciado .
-*│* ╰∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙ ∙ ∙ ∙ ∙
-*╰ ▸▸ Comandos de Youtube ◂◂*
-*│* ┊
-*│* ┊▸ ✦ $yt. Comando para buscar y descargar musica.
-*│* ╰∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙ ∙ ∙ ∙ ∙
-`.trim()
-                        await sock.sendMessage(
-                            numberWa,
-                            {
-                                text: menuPrincipal,
-                            },
-                            {
-                                quoted: messages[0],
-                            }
-                        );
+                        await getMenu(sock, numberWa, messages);
                     }
 
                 }
