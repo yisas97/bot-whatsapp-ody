@@ -1,6 +1,8 @@
 const ytSearch = require('yt-search');
 
 async function searchYouTube(text) {
+    text = text.replace("$yt.", "");
+    console.log("La musica: ", text);
     try {
       const searchResults = await ytSearch(text);
   
