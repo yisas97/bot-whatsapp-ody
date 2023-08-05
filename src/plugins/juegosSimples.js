@@ -30,6 +30,10 @@ async function getMenu(sock,numberWa,messages){
 *│* ┊
 *│* ┊▸ ✦ $yt. Comando para buscar y descargar musica.
 *│* ╰∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙ ∙ ∙ ∙ ∙
+*╰ ▸▸ Comandos de OpenAI ◂◂*
+*│* ┊
+*│* ┊▸ ✦ $openai. Comando para buscar en GPT.
+*│* ╰∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙ ∙ ∙ ∙ ∙
 `.trim()
     await sock.sendMessage(
         numberWa,

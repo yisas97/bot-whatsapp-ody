@@ -36,6 +36,7 @@ const {insertSticker} = require("./src/plugins/sticker");
 const {buscadorYoutube} = require("./src/plugins/youtube");
 const {getRandom} = require("./src/utils/util");
 const {juegoSiNo, getMenu, getHola, PingPong, getAdios} = require("./src/plugins/juegosSimples");
+const {consultGPT} = require("./src/plugins/chatGpt");
 
 app.use("/assets", express.static(__dirname + "/client/assets"));
 
@@ -90,10 +91,10 @@ async function connectToWhatsApp() {
                 sock.logout();
             } else if (reason === DisconnectReason.restartRequired) {
                 console.log("Se requiere reinicio, reiniciando...");
-                connectToWhatsApp();
+                await connectToWhatsApp();
             } else if (reason === DisconnectReason.timedOut) {
                 console.log("Se agotó el tiempo de conexión, conectando...");
-                connectToWhatsApp();
+                await connectToWhatsApp();
             } else {
                 sock.end(
                     `Motivo de desconexión desconocido: ${reason}|${lastDisconnect.error}`
@@ -221,6 +222,10 @@ async function connectToWhatsApp() {
                     //Aplicacion de Reacciones:
                     if (compareMessage.startsWith("$happy.")){
                         await insertSticker(sock,numberWa, 3);
+                    }
+                    if(compareMessage.startsWith("$openai.")){
+                        console.log("Empieza el openAI");
+                        await consultGPT(sock,numberWa,messages,compareMessage)
                     }
 
                 }
