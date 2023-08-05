@@ -218,6 +218,10 @@ async function connectToWhatsApp() {
                     } else if (compareMessage.startsWith("$menu.")) {
                         await getMenu(sock, numberWa, messages);
                     }
+                    //Aplicacion de Reacciones:
+                    if (compareMessage.startsWith("$happy.")){
+                        await insertSticker(sock,numberWa, 3);
+                    }
 
                 }
             }
