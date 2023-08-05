@@ -3,16 +3,11 @@ const {
     DisconnectReason,
     useMultiFileAuthState,
 } = require("@adiwajshing/baileys");
-const ffmpeg = require('fluent-ffmpeg');
-
-const buscadoryt = require('./src/plugins/buscador');
-const ytdl = require('ytdl-core');
 
 const pino = require("pino");
 const log =  pino;
 const {session} = {session: "session_auth_info"};
 const {Boom} = require("@hapi/boom");
-const fs = require("fs");
 const express = require("express");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
@@ -37,6 +32,7 @@ const {buscadorYoutube} = require("./src/plugins/youtube");
 const {getRandom} = require("./src/utils/util");
 const {juegoSiNo, getMenu, getHola, PingPong, getAdios} = require("./src/plugins/juegosSimples");
 const {consultGPT} = require("./src/plugins/chatGpt");
+const {descargarWaifus} = require("./src/plugins/waifus");
 
 app.use("/assets", express.static(__dirname + "/client/assets"));
 
@@ -75,10 +71,10 @@ async function connectToWhatsApp() {
                 sock.logout();
             } else if (reason === DisconnectReason.connectionClosed) {
                 console.log("Conexión cerrada, reconectando....");
-                connectToWhatsApp();
+                await connectToWhatsApp();
             } else if (reason === DisconnectReason.connectionLost) {
                 console.log("Conexión perdida del servidor, reconectando...");
-                connectToWhatsApp();
+                await connectToWhatsApp();
             } else if (reason === DisconnectReason.connectionReplaced) {
                 console.log(
                     "Conexión reemplazada, otra nueva sesión abierta, cierre la sesión actual primero"
@@ -190,11 +186,9 @@ async function connectToWhatsApp() {
                         await juegoSiNo(sock, numberWa, messages);
                     } else if (compareMessage.startsWith("$!")) {
                         const palabras = compareMessage.replace(/\$\!/, '').split(',');
-                        console.log("La nueva palabra : ", palabras);
                         const palabrasSeparadas = palabras.map(palabras => palabras.trim());
                         const indicePalabras = getRandom(palabrasSeparadas);
                         const palabrasSeleccionada = palabrasSeparadas[indicePalabras];
-                        console.log("Palabra seleccionada: ", palabrasSeleccionada);
 
                         await sock.sendMessage(
                             numberWa,
@@ -224,8 +218,12 @@ async function connectToWhatsApp() {
                         await insertSticker(sock,numberWa, 3);
                     }
                     if(compareMessage.startsWith("$openai.")){
-                        console.log("Empieza el openAI");
-                        await consultGPT(sock,numberWa,messages,compareMessage)
+                        const requestGPT = compareMessage.replace("$openai.","").trim();
+                        await consultGPT(sock,numberWa,messages,requestGPT)
+                    }
+                    if(compareMessage.startsWith("$waifu.")){
+                        console.log("Empiza la waifu")
+                        await descargarWaifus(sock,numberWa,messages);
                     }
 
                 }
@@ -239,7 +237,7 @@ async function connectToWhatsApp() {
 }
 
 const isConnected = () => {
-    return sock?.user ? true : false;
+    return !!sock?.user;
 };
 
 app.get("/send-message", async (req, res) => {
