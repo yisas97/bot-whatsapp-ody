@@ -25,6 +25,7 @@ async function getMenu(sock,numberWa,messages){
 *│* ┊▸ ✦ $kiss. Comando de Juego de Beso.
 *│* ┊▸ ✦ $marry. Comando de Juego de Casado .
 *│* ┊▸ ✦ $divorce. Comando de Juego de Divorciado .
+*│* ┊▸ ✦ $waifu. Comando que muestra una waifu
 *│* ╰∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙ ∙ ∙ ∙ ∙
 *╰ ▸▸ Comandos de Youtube ◂◂*
 *│* ┊

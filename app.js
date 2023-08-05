@@ -5,7 +5,7 @@ const {
 } = require("@adiwajshing/baileys");
 
 const pino = require("pino");
-const log =  pino;
+const log = pino;
 const {session} = {session: "session_auth_info"};
 const {Boom} = require("@hapi/boom");
 const express = require("express");
@@ -139,7 +139,7 @@ async function connectToWhatsApp() {
                                         quoted: null
                                     }
                                 );
-                                await insertSticker(sock,numberWa, 0);
+                                await insertSticker(sock, numberWa, 0);
 
                             }
                             if (text.startsWith("$marry.")) {
@@ -155,7 +155,7 @@ async function connectToWhatsApp() {
                                         quoted: null
                                     }
                                 );
-                                await insertSticker(sock,numberWa, 1);
+                                await insertSticker(sock, numberWa, 1);
                             }
                             if (text.startsWith("$divorce.")) {
                                 console.log(messages[0]);
@@ -170,7 +170,7 @@ async function connectToWhatsApp() {
                                         quoted: null
                                     }
                                 );
-                                await insertSticker(sock,numberWa, 2);
+                                await insertSticker(sock, numberWa, 2);
                             }
                         }
 
@@ -203,27 +203,26 @@ async function connectToWhatsApp() {
                     } else if (compareMessage.startsWith("$yt.")) {
                         await buscadorYoutube(sock, numberWa, messages, compareMessage);
                     } else if (compareMessage.trim() === "yo") {
-                        await getHola(sock,numberWa,messages);
+                        await getHola(sock, numberWa, messages);
                     } else if (compareMessage.trim() === "hola") {
-                        await getHola(sock,numberWa,messages);
+                        await getHola(sock, numberWa, messages);
                     } else if (compareMessage.trim() === "ping") {
-                        await PingPong(sock,numberWa,messages);
+                        await PingPong(sock, numberWa, messages);
                     } else if (compareMessage.trim() === "chao") {
-                        await getAdios(sock,numberWa,messages);
+                        await getAdios(sock, numberWa, messages);
                     } else if (compareMessage.startsWith("$menu.")) {
                         await getMenu(sock, numberWa, messages);
                     }
                     //Aplicacion de Reacciones:
-                    if (compareMessage.startsWith("$happy.")){
-                        await insertSticker(sock,numberWa, 3);
+                    if (compareMessage.startsWith("$happy.")) {
+                        await insertSticker(sock, numberWa, 3);
                     }
-                    if(compareMessage.startsWith("$openai.")){
-                        const requestGPT = compareMessage.replace("$openai.","").trim();
-                        await consultGPT(sock,numberWa,messages,requestGPT)
+                    if (compareMessage.startsWith("$openai.")) {
+                        const requestGPT = compareMessage.replace("$openai.", "").trim();
+                        await consultGPT(sock, numberWa, messages, requestGPT)
                     }
-                    if(compareMessage.startsWith("$waifu.")){
-                        console.log("Empiza la waifu")
-                        await descargarWaifus(sock,numberWa,messages);
+                    if (compareMessage.startsWith("$waifu.")) {
+                        await descargarWaifus(sock, numberWa, messages);
                     }
 
                 }
