@@ -2,7 +2,7 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-async function descargarWaifus(sock, numberWa, type) {
+async function descargarWaifus(sock, numberWa) {
     axios.get('https://api.waifu.pics/sfw/waifu')
         .then(response => {
             const url = response.data.url;
@@ -12,7 +12,6 @@ async function descargarWaifus(sock, numberWa, type) {
             })
                 .then(response => {
                     const output = path.join(__dirname, "..", "images", "waifu.jpg");
-                    console.log(output);
                     const writer = fs.createWriteStream(output);
                     response.data.pipe(writer);
 

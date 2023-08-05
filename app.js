@@ -222,7 +222,7 @@ async function connectToWhatsApp() {
                         await consultGPT(sock, numberWa, messages, requestGPT)
                     }
                     if (compareMessage.startsWith("$waifu.")) {
-                        await descargarWaifus(sock, numberWa, messages);
+                        await descargarWaifus(sock, numberWa);
                     }
 
                 }
