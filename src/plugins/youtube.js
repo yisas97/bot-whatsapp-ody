@@ -49,7 +49,7 @@ async function buscadorYoutube(sock,numberWa,messages,compareMessage){
         () => {
             sock.sendMessage(
                 numberWa,
-                {audio: {url: '../../output.mp3'}, mimetype: 'audio/mp4'},
+                {audio: {url: 'output.mp3'}, mimetype: 'audio/mp4'},
                 {url: "audio.mp3"} //can send mp3, mp4, & ogg
             )
         }
