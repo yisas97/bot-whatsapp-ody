@@ -14,7 +14,10 @@ const {
     casadoEstatico3,
     casadoEstatico4, casadoEstatico5, divorciadoEstatico1, divorciadoEstatico2, divorciadoEstatico3, divorciadoEstatico4,
     feliz1, feliz2, feliz3, feliz4, feliz5, feliz6, feliz7, feliz8, feliz9, feliz10, feliz11, feliz12, feliz13, feliz14,
-    feliz15
+    feliz15,
+    abrazo1,abrazo2,abrazo3,abrazo4,abrazo5,abrazo6,abrazo7,abrazo8,
+    golpe1, golpe2, golpe3, golpe4, golpe5, golpe6, golpe7, golpe8,
+    dance1, dance2, dance3, dance4
 } = require( "../stickers/stickerEstaticos");
 const {Sticker, StickerTypes} = require( "wa-sticker-formatter");
 const {getRandomElement} = require( "../utils/util");
@@ -106,7 +109,7 @@ async function insertSticker(sock,numberWa, type) {
 
             sticker = await new Sticker(gitBuffer, {
                 pack: 'My Sticker',
-                author: 'Jesus',
+                author: 'Darkness',
                 type: StickerTypes.DEFAULT,
                 categories: ['🤩', '🎉'],
                 quality: 100,
@@ -118,6 +121,86 @@ async function insertSticker(sock,numberWa, type) {
                     sticker
                 }
             );
+            case 4:
+                arrayEstatico = [
+                   abrazo1,
+                   abrazo2,
+                   abrazo3,
+                   abrazo4,
+                   abrazo5,
+                   abrazo6,
+                   abrazo7,
+                   abrazo8
+                ];
+                randomElement = getRandomElement(arrayEstatico);
+                gitBuffer = Buffer.from(randomElement, 'base64');
+    
+                sticker = await new Sticker(gitBuffer, {
+                    pack: 'My Sticker',
+                    author: 'Darkness',
+                    type: StickerTypes.DEFAULT,
+                    categories: ['🤩', '🎉'],
+                    quality: 100,
+                }).build()
+    
+                return await sock.sendMessage(
+                    numberWa,
+                    {
+                        sticker
+                    }
+                );
+                case 5:
+                arrayEstatico = [
+                    golpe1,
+                    golpe2,
+                    golpe3,
+                    golpe4,
+                    golpe5,
+                    golpe6,
+                    golpe7,
+                    golpe8
+                ];
+                randomElement = getRandomElement(arrayEstatico);
+                gitBuffer = Buffer.from(randomElement, 'base64');
+    
+                sticker = await new Sticker(gitBuffer, {
+                    pack: 'My Sticker',
+                    author: 'Darkness',
+                    type: StickerTypes.DEFAULT,
+                    categories: ['🤩', '🎉'],
+                    quality: 100,
+                }).build()
+    
+                return await sock.sendMessage(
+                    numberWa,
+                    {
+                        sticker
+                    }
+                );
+                case 6:
+                    arrayEstatico = [
+                        dance1,
+                        dance2,
+                        dance3,
+                        dance4
+                    ];
+                    randomElement = getRandomElement(arrayEstatico);
+                    gitBuffer = Buffer.from(randomElement, 'base64');
+        
+                    sticker = await new Sticker(gitBuffer, {
+                        pack: 'My Sticker',
+                        author: 'Darkness',
+                        type: StickerTypes.DEFAULT,
+                        categories: ['🤩', '🎉'],
+                        quality: 100,
+                    }).build()
+        
+                    return await sock.sendMessage(
+                        numberWa,
+                        {
+                            sticker
+                        }
+                    );
 
     }
 

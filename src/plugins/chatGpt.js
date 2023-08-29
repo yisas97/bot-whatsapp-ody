@@ -9,6 +9,7 @@ const configuration = new Configuration({
 
 async function consultGPT(sock, numberWa, messages, compareMessage) {
     const openai = new OpenAIApi(configuration);
+    console.log(openai)
     console.log(compareMessage)
     const response = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
@@ -28,6 +29,7 @@ async function consultGPT(sock, numberWa, messages, compareMessage) {
             quoted: messages[0],
         }
     );
+
 }
 
 module.exports = {

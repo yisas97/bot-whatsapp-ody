@@ -30,7 +30,7 @@ const qrcode = require("qrcode");
 const {insertSticker} = require("./src/plugins/sticker");
 const {buscadorYoutube} = require("./src/plugins/youtube");
 const {getRandom} = require("./src/utils/util");
-const {juegoSiNo, getMenu, getHola, PingPong, getAdios} = require("./src/plugins/juegosSimples");
+const {juegoSiNo, getMenu, getHola, PingPong, getAdios, getVivir, getEdad, getDia, getYo, getEstado} = require("./src/plugins/juegosSimples");
 const {consultGPT} = require("./src/plugins/chatGpt");
 const {descargarWaifus} = require("./src/plugins/waifus");
 
@@ -172,8 +172,37 @@ async function connectToWhatsApp() {
                                 );
                                 await insertSticker(sock, numberWa, 2);
                             }
+                            if (text.startsWith("$hug.")) {
+                                console.log(messages[0]);
+                                await sock.sendMessage(
+                                    numberWa,
+                                    {
+                                        text: `@${mentionedJid[0].split('@')[0]} ha recibido un abrazo de @${participant.split('@')[0]}`,
+                                        mentions: [mentionedJid[0], participant]
+                                    }
+                                    ,
+                                    {
+                                        quoted: null
+                                    }
+                                );
+                                await insertSticker(sock, numberWa, 4);
                         }
-
+                        if (text.startsWith("$hit.")) {
+                            console.log(messages[0]);
+                            await sock.sendMessage(
+                                numberWa,
+                                {
+                                    text: `@${mentionedJid[0].split('@')[0]} ha recibido un golpe de @${participant.split('@')[0]}`,
+                                    mentions: [mentionedJid[0], participant]
+                                }
+                                ,
+                                {
+                                    quoted: null
+                                }
+                            );
+                            await insertSticker(sock, numberWa, 5);
+                    }
+                    }
                     }
                     const captureMessage = messages[0]?.message?.conversation;
                     const numberWa = messages[0]?.key?.remoteJid;
@@ -203,7 +232,7 @@ async function connectToWhatsApp() {
                     } else if (compareMessage.startsWith("$yt.")) {
                         await buscadorYoutube(sock, numberWa, messages, compareMessage);
                     } else if (compareMessage.trim() === "yo") {
-                        await getHola(sock, numberWa, messages);
+                        await getYo(sock, numberWa, messages);
                     } else if (compareMessage.trim() === "hola") {
                         await getHola(sock, numberWa, messages);
                     } else if (compareMessage.trim() === "ping") {
@@ -212,10 +241,23 @@ async function connectToWhatsApp() {
                         await getAdios(sock, numberWa, messages);
                     } else if (compareMessage.startsWith("$menu.")) {
                         await getMenu(sock, numberWa, messages);
+                    } else if (compareMessage.startsWith("donde vives?")) {
+                        await getVivir(sock, numberWa, messages);
+                    } else if (compareMessage.startsWith("edad")) {
+                        await getEdad(sock, numberWa, messages);
+                    } else if (compareMessage.startsWith("buen día")) {
+                        await getDia(sock, numberWa, messages);
+                    } else if (compareMessage.trim() === "como estas?") {
+                        await getEstado(sock, numberWa, messages);
+                    } else if (compareMessage.trim() === "cómo estás?") {
+                        await getEstado(sock, numberWa, messages);
                     }
                     //Aplicacion de Reacciones:
                     if (compareMessage.startsWith("$happy.")) {
                         await insertSticker(sock, numberWa, 3);
+                    }
+                    if (compareMessage.startsWith("$dance.")) {
+                        await insertSticker(sock, numberWa, 6);
                     }
                     if (compareMessage.startsWith("$openai.")) {
                         const requestGPT = compareMessage.replace("$openai.", "").trim();
