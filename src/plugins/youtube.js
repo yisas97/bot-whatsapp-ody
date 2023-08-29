@@ -42,7 +42,7 @@ async function buscadorYoutube(sock,numberWa,messages,compareMessage){
         quality: 'highestaudio',
     };
     const audioStream = ytdl(elementBuscar.url, downloadOptions);
-    const outputStream = fs.createWriteStream('../../output.mp3');
+    const outputStream = fs.createWriteStream('output.mp3');
     audioStream.pipe(outputStream);
     outputStream.on(
         'finish',
