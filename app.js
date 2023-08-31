@@ -30,7 +30,7 @@ const qrcode = require("qrcode");
 const {insertSticker} = require("./src/plugins/sticker");
 const {buscadorYoutube} = require("./src/plugins/youtube");
 const {getRandom} = require("./src/utils/util");
-const {juegoSiNo, getMenu, getHola, PingPong, getAdios, getVivir, getEdad, getDia, getYo, getEstado} = require("./src/plugins/juegosSimples");
+const {juegoSiNo, getMenu, getHola, PingPong, getAdios, getVivir, getEdad, getDia, getYo, getEstado, getProb} = require("./src/plugins/juegosSimples");
 const {consultGPT} = require("./src/plugins/chatGpt");
 const {descargarWaifus} = require("./src/plugins/waifus");
 
@@ -251,6 +251,8 @@ async function connectToWhatsApp() {
                         await getEstado(sock, numberWa, messages);
                     } else if (compareMessage.trim() === "cómo estás?") {
                         await getEstado(sock, numberWa, messages);
+                    } else if (compareMessage.startsWith("$prob.")) {
+                        await getProb(sock, numberWa, messages);
                     }
                     //Aplicacion de Reacciones:
                     if (compareMessage.startsWith("$happy.")) {

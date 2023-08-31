@@ -21,7 +21,8 @@ async function getMenu(sock,numberWa,messages){
 *╰ ▸▸ Comandos de Juegos ◂◂*
 *│* ┊
 *│* ┊▸ ✦ $. Comando de Juego Si o No.
-*│* ┊▸ ✦ $! Comando de Juego quien gana
+*│* ┊▸ ✦ $! Comando de Juego quien gana.
+*│* ┊▸ ✦ $prob. Comando de Juego para obtener Probabilidad.
 *│* ┊▸ ✦ $kiss. Comando de Juego de Beso.
 *│* ┊▸ ✦ $marry. Comando de Juego de Casado .
 *│* ┊▸ ✦ $divorce. Comando de Juego de Divorciado .
@@ -145,6 +146,19 @@ async function getDia(sock,numberWa,messages) {
     );
 }
 
+async function getProb(sock,numberWa,messages){
+    var aleatorio = Math.floor(Math.random()*100);
+    await sock.sendMessage(
+        numberWa,
+        {
+            text: "La probabilidad de que suceda sería del " + aleatorio + "%",
+        },
+        {
+            quoted: messages[0],
+        }
+    );
+}
+
 module.exports = {
     juegoSiNo,
     getMenu,
@@ -155,5 +169,6 @@ module.exports = {
     getVivir,
     getEdad,
     getDia,
-    getEstado
+    getEstado,
+    getProb
 }
