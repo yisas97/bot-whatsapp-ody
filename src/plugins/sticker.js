@@ -17,7 +17,8 @@ const {
     feliz15,
     abrazo1,abrazo2,abrazo3,abrazo4,abrazo5,abrazo6,abrazo7,abrazo8,
     golpe1, golpe2, golpe3, golpe4, golpe5, golpe6, golpe7, golpe8,
-    dance1, dance2, dance3, dance4
+    dance1, dance2, dance3, dance4,
+    kuru1
 } = require( "../stickers/stickerEstaticos");
 const {Sticker, StickerTypes} = require( "wa-sticker-formatter");
 const {getRandomElement} = require( "../utils/util");
@@ -201,6 +202,27 @@ async function insertSticker(sock,numberWa, type) {
                             sticker
                         }
                     );
+                    case 7:
+                        arrayEstatico = [
+                            kuru1,
+                        ];
+                        randomElement = getRandomElement(arrayEstatico);
+                        gitBuffer = Buffer.from(randomElement, 'base64');
+            
+                        sticker = await new Sticker(gitBuffer, {
+                            pack: 'My Sticker',
+                            author: 'Darkness',
+                            type: StickerTypes.DEFAULT,
+                            categories: ['🤩', '🎉'],
+                            quality: 100,
+                        }).build()
+            
+                        return await sock.sendMessage(
+                            numberWa,
+                            {
+                                sticker
+                            }
+                        );
 
     }
 

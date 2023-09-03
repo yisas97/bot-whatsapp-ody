@@ -261,6 +261,10 @@ async function connectToWhatsApp() {
                     if (compareMessage.startsWith("$dance.")) {
                         await insertSticker(sock, numberWa, 6);
                     }
+                    if (compareMessage.startsWith("kuru kuru")||compareMessage.startsWith("kuru")) {
+                        text: "Kururin.",
+                        await insertSticker(sock, numberWa, 7);
+                    }
                     if (compareMessage.startsWith("$openai.")) {
                         const requestGPT = compareMessage.replace("$openai.", "").trim();
                         await consultGPT(sock, numberWa, messages, requestGPT)
