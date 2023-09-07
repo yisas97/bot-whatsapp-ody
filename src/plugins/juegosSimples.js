@@ -21,7 +21,7 @@ async function getMenu(sock,numberWa,messages){
 *╰ ▸▸ Comandos de Juegos ◂◂*
 *│* ┊
 *│* ┊▸ ✦ $. Comando de Juego Si o No.
-*│* ┊▸ ✦ $! Comando de Juego quien gana.
+*│* ┊▸ ✦ $! Comando de Juego quien gana(separar con comas ",").
 *│* ┊▸ ✦ $prob. Comando de Juego para obtener Probabilidad.
 *│* ┊▸ ✦ $kiss. Comando de Juego de Beso.
 *│* ┊▸ ✦ $marry. Comando de Juego de Casado .
@@ -114,7 +114,7 @@ async function getHola(sock,numberWa,messages) {
     await sock.sendMessage(
         numberWa,
         {
-            text: "Hola, soy Cherry, tu bot preferida :3",
+            text: "Hola que tengas un buen día hoy. Gambatte!",
         },
         {
             quoted: messages[0],

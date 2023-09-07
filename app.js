@@ -233,8 +233,9 @@ async function connectToWhatsApp() {
                         await buscadorYoutube(sock, numberWa, messages, compareMessage);
                     } else if (compareMessage.trim() === "yo") {
                         await getYo(sock, numberWa, messages);
-                    } else if (compareMessage.trim() === "hola") {
+                    } else if (compareMessage.startsWith("hola")) {
                         await getHola(sock, numberWa, messages);
+                        await insertSticker(sock, numberWa, 3);
                     } else if (compareMessage.trim() === "ping") {
                         await PingPong(sock, numberWa, messages);
                     } else if (compareMessage.trim() === "chao") {
