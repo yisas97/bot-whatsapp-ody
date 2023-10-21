@@ -20,7 +20,7 @@
     "express-fileupload": "^1.4.0",
     "file-type": "^18.5.0",
     "fluent-ffmpeg": "^2.1.2",
-    "fs": "^0.0.1-security",
+    "fs": "^0.0.2",
     "node-cache": "^5.1.2",
     "node-fetch": "^3.3.2",
     "node-webpmux": "^3.1.7",
