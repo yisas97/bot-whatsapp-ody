@@ -3,16 +3,6 @@ const ytdl = require("ytdl-core");
 const fs = require("fs");
 
 function mostrarInformacionVideo(video) {
-    console.log('Título:', video.title);
-    console.log('URL:', video.url);
-    console.log('Duración:', video.timestamp);
-    console.log('Vistas:', video.views);
-    console.log('URL de la miniatura:', video.image);
-    console.log('Autor:', video.author.name);
-    console.log('URL del autor:', video.author.url);
-    console.log('Verificado:', video.author.verified);
-    console.log('---');
-
     return `Se encontre estos valores:
 	*│* ┊
 	*│* ┊▸ ✦ _Titulo: ${video.title}_
@@ -42,14 +32,19 @@ async function buscadorYoutube(sock,numberWa,messages,compareMessage){
         quality: 'highestaudio',
     };
     const audioStream = ytdl(elementBuscar.url, downloadOptions);
-    const outputStream = fs.createWriteStream('output.mp3');
+    const outputStream = fs.createWriteStream('./src/resources/output.mp3');
     audioStream.pipe(outputStream);
     outputStream.on(
         'finish',
         () => {
             sock.sendMessage(
                 numberWa,
-                {audio: {url: 'output.mp3'}, mimetype: 'audio/mp4'},
+                {
+                    audio: {
+                        url: './src/resources/output.mp3'
+                        }, 
+                    mimetype: 'audio/mp4'
+                },
                 {url: "audio.mp3"} //can send mp3, mp4, & ogg
             )
         }
