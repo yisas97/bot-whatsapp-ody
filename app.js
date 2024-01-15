@@ -33,6 +33,7 @@ const {getRandom} = require("./src/utils/util");
 const {juegoSiNo, getMenu, getHola, PingPong, getAdios, getVivir, getEdad, getDia, getYo, getEstado, getProb} = require("./src/plugins/juegosSimples");
 const {consultGPT} = require("./src/plugins/chatGpt");
 const {descargarWaifus} = require("./src/plugins/waifus");
+const { ImageToSticker } = require("./src/plugins/imgToSticker");
 
 app.use("/assets", express.static(__dirname + "/client/assets"));
 
@@ -105,29 +106,32 @@ async function connectToWhatsApp() {
     sock.ev.on("messages.upsert", async ({messages, type}) => {
         try {
             if (type === "notify") {
+                for (let msg of messages){
+                    if (msg.message?.imageMessage) {
+                        const imageMessage = msg.message.imageMessage;
+                        const caption = imageMessage.caption || "";
+                        const numberWa = msg.key.remoteJid;
+        
+                        if (caption.startsWith("$sticker.")) {
+                            console.log("Procesando imagen para convertirla en sticker...");
+                            await ImageToSticker(sock, numberWa, messages[0]);
+                        }
+                    }
+                }
                 if (!messages[0]?.key.fromMe) {
-                    console.log("El mensaje : ", messages);
-                    console.log("El tipo : ", type);
                     if (messages[0]?.message.extendedTextMessage) {
                         const extendedTextMessage = messages[0]?.message.extendedTextMessage;
                         const numberWa = messages[0]?.key?.remoteJid;
-                        console.log("NumberWA: ", numberWa);
-                        console.log("Extend: ", extendedTextMessage);
                         const text = extendedTextMessage.text;
-                        console.log("Texto del mensaje en extension: ", text);
                         //Verificar la mencion
 
                         //Quien lo manda
                         const participant = messages[0]?.key.participant;
-                        console.log("Participant: ", participant);
                         if (extendedTextMessage.contextInfo.mentionedJid) {
                             const mentionedJid = extendedTextMessage.contextInfo.mentionedJid;
                             const mentioned = mentionedJid[0].split('@')[0];
-                            console.log("Mencionado: ", mentioned);
-                            console.log("Menciones: ", mentionedJid);
 
                             if (text.startsWith("$kiss.")) {
-                                console.log(messages[0]);
                                 await sock.sendMessage(
                                     numberWa,
                                     {
@@ -143,7 +147,6 @@ async function connectToWhatsApp() {
 
                             }
                             if (text.startsWith("$marry.")) {
-                                console.log(messages[0]);
                                 await sock.sendMessage(
                                     numberWa,
                                     {
@@ -158,7 +161,6 @@ async function connectToWhatsApp() {
                                 await insertSticker(sock, numberWa, 1);
                             }
                             if (text.startsWith("$divorce.")) {
-                                console.log(messages[0]);
                                 await sock.sendMessage(
                                     numberWa,
                                     {
@@ -173,7 +175,6 @@ async function connectToWhatsApp() {
                                 await insertSticker(sock, numberWa, 2);
                             }
                             if (text.startsWith("$hug.")) {
-                                console.log(messages[0]);
                                 await sock.sendMessage(
                                     numberWa,
                                     {
@@ -188,7 +189,6 @@ async function connectToWhatsApp() {
                                 await insertSticker(sock, numberWa, 4);
                         }
                         if (text.startsWith("$hit.")) {
-                            console.log(messages[0]);
                             await sock.sendMessage(
                                 numberWa,
                                 {
@@ -201,14 +201,14 @@ async function connectToWhatsApp() {
                                 }
                             );
                             await insertSticker(sock, numberWa, 5);
-                    }
+                        }
+
                     }
                     }
                     const captureMessage = messages[0]?.message?.conversation;
                     const numberWa = messages[0]?.key?.remoteJid;
 
                     const compareMessage = captureMessage.toLocaleLowerCase();
-                    console.log(compareMessage);
                     //Juego de preguntas si o no
 
                     if (compareMessage.startsWith("$.")) {

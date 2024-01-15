@@ -1,10 +1,8 @@
-version: '3.5'
+version: '3.8'
 services:
-  wsp-bot:
-    image: "wsp-bot:latest"
-    build:
-      context: .
-      dockerfile: ./Dockerfile      
+  web:
+    image: yisas97/wsp-bot-ody:1.0.0
     ports:
-      - "8000:8000"
-    
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
